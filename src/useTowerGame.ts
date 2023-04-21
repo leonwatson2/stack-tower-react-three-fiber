@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Mesh, Box3 } from 'three';
 import { useFrame } from '@react-three/fiber';
 
@@ -11,7 +11,7 @@ import {
 } from './constants';
 import { Controls, DIRECTION, StackingBox } from './Types';
 import { useKeyboardControls } from '@react-three/drei';
-import { TowerActionType, towerReducer, useTowerReducer } from './towerReducer';
+import { TowerActionType, useTowerReducer } from './towerReducer';
 import { boxIsOverLappingNeg, boxIsOverLappingPos } from './utils';
 
 const initalBoxes: Array<StackingBox> = [

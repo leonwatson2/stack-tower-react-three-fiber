@@ -3,22 +3,6 @@ import { DIRECTION, StackingBox } from './Types';
 import { BOX_HEIGHT, START_DIMENSIONS, START_LOCATION } from './constants';
 import { chooseRandomDirection } from './useTowerGame';
 
-// const [movingBoxDimesions] = useState(START_DIMENSIONS);
-//   const [direction, setDirection] = useState<DIRECTION>();
-//   const [boxes, setBoxes] = useState<Array<StackingBox>>(initalBoxes);
-//   const [wasPressed, setWasPressed] = useState(false);
-//   const spacePressed = useKeyboardControls<Controls>((state) => state.hit);
-//   const [movingBoxStartingPosition, setMo] = useState<[x: number, y: number, z: number]>();
-//   const [heightHasBeenSet, setHeightBeenSet] = useState(false);
-
-const initalBoxes: Array<StackingBox> = [
-    {
-        position: [START_LOCATION.x, 0, START_LOCATION.z],
-        args: [START_DIMENSIONS.width, BOX_HEIGHT, START_DIMENSIONS.length],
-        color: 'darkcyan',
-    },
-];
-
 type TowerStateType = {
   direction: DIRECTION;
   movingBoxDimesions: { width: number; length: number };
