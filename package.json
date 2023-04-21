@@ -21,7 +21,7 @@
     "vite": "^4.0.4"
   },
   "dependencies": {
-    "@react-three/drei": "9.50",
+    "@react-three/drei": "9.58",
     "@react-three/fiber": "^8.9.2",
     "leva": "^0.9.34",
     "r3f-perf": "^7.1.2",

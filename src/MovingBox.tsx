@@ -3,7 +3,7 @@ import { Mesh } from 'three';
 import { BOX_HEIGHT } from './constants';
 
 type MovingBoxProps = {
-  currentStackNumber: number;
+  position: [x: number, y: number, z: number];
   deminsions: {
     width: number;
     length: number;
@@ -11,15 +11,15 @@ type MovingBoxProps = {
 };
 
 const MovingBoxComponent: ForwardRefRenderFunction<Mesh, MovingBoxProps> = (
-  { currentStackNumber, deminsions: { width, length: height } },
-  boxRef,
+    { position, deminsions: { width, length: height } },
+    boxRef,
 ) => {
-  return (
-    <mesh position-y={currentStackNumber * BOX_HEIGHT} ref={boxRef}>
-      <boxBufferGeometry args={[width, BOX_HEIGHT, height]} />
-      <meshStandardMaterial color="red" />
-    </mesh>
-  );
+    return (
+        <mesh position={position} ref={boxRef}>
+            <boxGeometry args={[width, BOX_HEIGHT, height]} />
+            <meshStandardMaterial color="red" />
+        </mesh>
+    );
 };
 
 export const MovingBox = React.forwardRef(MovingBoxComponent);
