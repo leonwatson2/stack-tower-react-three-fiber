@@ -16,6 +16,6 @@ export enum DIRECTION {
 }
 
 export enum Controls {
-  reset = 'forward',
+  reset = 'reset',
   hit = 'hit',
 }
