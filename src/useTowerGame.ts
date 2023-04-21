@@ -5,6 +5,42 @@ import { useFrame } from '@react-three/fiber';
 import { TOWER_BOUNDS, STARTING_SPEED, START_DIMENSIONS, BOX_HEIGHT } from './constants';
 import { DIRECTION, StackingBox } from './Types';
 
+export const useTowerGame = () => {
+  const lastBox = useRef<Mesh>();
+  const movingBox = useRef<Mesh>();
+  const [movingBoxDimesions] = useState(START_DIMENSIONS);
+  const [direction, setDirection] = useState<DIRECTION>();
+
+  const boxes: Array<StackingBox> = [
+    {
+      position: [0, 0, 0],
+      args: [START_DIMENSIONS.width, BOX_HEIGHT, START_DIMENSIONS.length],
+      color: 'darkcyan',
+    },
+    {
+      position: [0, 1 * BOX_HEIGHT, 0],
+      args: [START_DIMENSIONS.width, BOX_HEIGHT, START_DIMENSIONS.length],
+      color: 'cyan',
+    },
+    {
+      position: [0, 2 * BOX_HEIGHT, 0],
+      args: [START_DIMENSIONS.width, BOX_HEIGHT, START_DIMENSIONS.length],
+      color: 'DarkGreen',
+    },
+  ];
+
+  useEffect(() => {
+    if (!direction) {
+      chooseRandomDirection(setDirection);
+    }
+  }, []);
+
+  useFrame(() => {
+    if (direction) moveInDirection[direction](movingBox.current, setDirection);
+  });
+  return { movingBox, lastBox, boxes, movingBoxDimesions };
+};
+
 export const chooseRandomDirection = (
   setDirection: React.Dispatch<React.SetStateAction<DIRECTION>>,
 ) => {
@@ -64,40 +100,4 @@ export const moveInDirection: Record<
       movingBox.position.z -= STARTING_SPEED;
     }
   },
-};
-
-export const useTowerGame = () => {
-  const lastBox = useRef<Mesh>();
-  const movingBox = useRef<Mesh>();
-
-  const [direction, setDirection] = useState<DIRECTION>();
-
-  const boxes: Array<StackingBox> = [
-    {
-      position: [0, 0, 0],
-      args: [START_DIMENSIONS.width, BOX_HEIGHT, START_DIMENSIONS.length],
-      color: 'darkcyan',
-    },
-    {
-      position: [0, 1 * BOX_HEIGHT, 0],
-      args: [START_DIMENSIONS.width, BOX_HEIGHT, START_DIMENSIONS.length],
-      color: 'cyan',
-    },
-    {
-      position: [0, 2 * BOX_HEIGHT, 0],
-      args: [START_DIMENSIONS.width, BOX_HEIGHT, START_DIMENSIONS.length],
-      color: 'DarkGreen',
-    },
-  ];
-
-  useEffect(() => {
-    if (!direction) {
-      chooseRandomDirection(setDirection);
-    }
-  }, []);
-
-  useFrame(() => {
-    if (direction) moveInDirection[direction](movingBox.current, setDirection);
-  });
-  return { movingBox, lastBox, boxes };
 };
