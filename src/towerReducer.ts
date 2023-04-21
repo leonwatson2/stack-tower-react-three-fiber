@@ -3,6 +3,14 @@ import { DIRECTION, StackingBox } from './Types';
 import { BOX_HEIGHT, START_DIMENSIONS, START_LOCATION } from './constants';
 import { chooseRandomDirection } from './useTowerGame';
 
+export const initialBoxes: Array<StackingBox> = [
+    {
+        position: [START_LOCATION.x, 0, START_LOCATION.z],
+        args: [START_DIMENSIONS.width, BOX_HEIGHT, START_DIMENSIONS.length],
+        color: 'darkcyan',
+    },
+];
+
 type TowerStateType = {
   direction: DIRECTION;
   movingBoxDimesions: { width: number; length: number };
@@ -34,6 +42,7 @@ export type TowerActionType =
 
 export const towerReducer: Reducer<TowerStateType, TowerActionType> = (state, action) => {
     let newDirection: DIRECTION;
+
     switch (action.type) {
     case 'START_GAME':
         return {
@@ -69,8 +78,28 @@ export const towerReducer: Reducer<TowerStateType, TowerActionType> = (state, ac
             ...state,
             direction: getOppositeDirection(state.direction),
         };
+    case 'END_GAME':
+        return {
+            ...state,
+            direction: DIRECTION.NONE,
+            movingBoxStartingPosition: [
+                START_LOCATION.x,
+                (state.boxes.length + 1) * BOX_HEIGHT,
+                START_LOCATION.z,
+            ],
+        };
+
+    case 'RESET_GAME':
+        return {
+            ...state,
+            direction: chooseRandomDirection(),
+            boxes: initialBoxes,
+            movingBoxDimesions: START_DIMENSIONS,
+            movingBoxStartingPosition: [START_LOCATION.x, 1 * BOX_HEIGHT, START_LOCATION.z],
+        };
+    default:
+        return state;
     }
-    return state;
 };
 
 function getOppositeDirection(direction: DIRECTION) {
@@ -91,8 +120,12 @@ function getOppositeDirection(direction: DIRECTION) {
 const initialValues: TowerStateType = {
     direction: null,
     movingBoxDimesions: START_DIMENSIONS,
-    boxes: [],
+    boxes: initialBoxes,
     movingBoxStartingPosition: [START_LOCATION.x, 2 * BOX_HEIGHT, START_LOCATION.z],
 };
 
-export const useTowerReducer = () => useReducer(towerReducer, initialValues);
+export const useTowerReducer = (middleware?: (state: TowerStateType) => void) => {
+    const reducer = useReducer(towerReducer, initialValues);
+    middleware && middleware(reducer[0]);
+    return reducer;
+};

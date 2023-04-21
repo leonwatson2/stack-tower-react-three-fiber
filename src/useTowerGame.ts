@@ -2,25 +2,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Mesh, Box3 } from 'three';
 import { useFrame } from '@react-three/fiber';
 
-import {
-    TOWER_BOUNDS,
-    STARTING_SPEED,
-    START_DIMENSIONS,
-    BOX_HEIGHT,
-    START_LOCATION,
-} from './constants';
+import { TOWER_BOUNDS, STARTING_SPEED, BOX_HEIGHT } from './constants';
 import { Controls, DIRECTION, StackingBox } from './Types';
 import { useKeyboardControls } from '@react-three/drei';
-import { TowerActionType, useTowerReducer } from './towerReducer';
+import { TowerActionType, useTowerReducer, initialBoxes } from './towerReducer';
 import { boxIsOverLappingNeg, boxIsOverLappingPos } from './utils';
-
-const initalBoxes: Array<StackingBox> = [
-    {
-        position: [START_LOCATION.x, 0, START_LOCATION.z],
-        args: [START_DIMENSIONS.width, BOX_HEIGHT, START_DIMENSIONS.length],
-        color: 'darkcyan',
-    },
-];
 
 export const useTowerGame = () => {
     const lastBox = useRef<Mesh>();
@@ -52,7 +38,9 @@ export const useTowerGame = () => {
             newLength = movingBoxEdges.max.z - lastBoxEdges.min.z;
             newStartZ = lastBoxEdges.min.z + newLength / 2;
         } else {
-            console.log('missed');
+            dispatch({ type: 'END_GAME' });
+
+            return;
         }
 
         const newBox: StackingBox = {
@@ -65,19 +53,25 @@ export const useTowerGame = () => {
     }, [boxes]);
 
     useEffect(() => {
-        dispatch({ type: 'START_GAME', payload: { initialBoxes: initalBoxes } });
+        dispatch({ type: 'START_GAME', payload: { initialBoxes: initialBoxes } });
     }, []);
 
     useFrame(() => {
         if (spacePressed) {
             if (!wasPressed) {
-                stackNewBox();
-                setWasPressed(true);
+                if (direction === DIRECTION.NONE) {
+                    dispatch({ type: 'START_GAME', payload: { initialBoxes: initialBoxes } });
+                    setWasPressed(true);
+                } else {
+                    stackNewBox();
+                    setWasPressed(true);
+                }
             }
         } else {
             if (wasPressed) setWasPressed(false);
         }
-        if (direction !== null) moveInDirection[direction](movingBox.current, dispatch);
+
+        if (direction !== DIRECTION.NONE) moveInDirection[direction](movingBox.current, dispatch);
     });
 
     return { movingBox, lastBox, boxes, movingBoxDimesions, direction, movingBoxStartingPosition };
@@ -131,4 +125,6 @@ export const moveInDirection: Record<
             movingBox.position.z -= STARTING_SPEED;
         }
     },
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    [DIRECTION.NONE]: () => {},
 };
