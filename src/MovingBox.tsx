@@ -16,7 +16,7 @@ const MovingBoxComponent: ForwardRefRenderFunction<Mesh, MovingBoxProps> = (
 ) => {
     return (
         <mesh position={position} ref={boxRef}>
-            <boxBufferGeometry args={[width, BOX_HEIGHT, height]} />
+            <boxGeometry args={[width, BOX_HEIGHT, height]} />
             <meshStandardMaterial color="red" />
         </mesh>
     );
