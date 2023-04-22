@@ -8,6 +8,7 @@ import { Controls } from './Types';
 
 // eslint-disable-next-line import/named
 import { KeyboardControls, KeyboardControlsEntry } from '@react-three/drei';
+import { CameraConstants } from './constants';
 
 const root = ReactDOM.createRoot(document.querySelector('#root'));
 
@@ -22,15 +23,15 @@ root.render(
         <Canvas
             id={'game-canvas'}
             camera={{
-                zoom: 150,
+                zoom: CameraConstants.START_ZOOM,
                 near: -50,
                 rotation: [0, 0, 0],
-                position: [1, 1, 1],
+                position: CameraConstants.START_POSITION,
             }}
             orthographic
         >
             <Experience />
         </Canvas>
-    ,
+        ,
     </KeyboardControls>,
 );

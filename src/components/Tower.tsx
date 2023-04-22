@@ -1,22 +1,30 @@
 import React, { ForwardRefRenderFunction } from 'react';
 import { StackingBox } from '../Types';
-import { Mesh } from 'three';
+import { Group, Mesh } from 'three';
 
 type TowerProps = {
-  towerBoxes: Array<StackingBox>;
+    towerBoxes: Array<StackingBox>;
+    groupRef: React.MutableRefObject<Group>;
 };
 
-const TowerComponent: ForwardRefRenderFunction<Mesh, TowerProps> = ({ towerBoxes }, ref) => {
-  return (
-    <>
-      {towerBoxes.map((box, i) => (
-        <mesh key={i} position={box.position} ref={i === towerBoxes.length - 1 ? ref : undefined}>
-          <boxGeometry args={box.args} />
-          <meshStandardMaterial color={box.color} />
-        </mesh>
-      ))}
-    </>
-  );
+const TowerComponent: ForwardRefRenderFunction<Mesh, TowerProps> = (
+    { towerBoxes, groupRef },
+    ref,
+) => {
+    return (
+        <group ref={groupRef}>
+            {towerBoxes.map((box, i) => (
+                <mesh
+                    key={i}
+                    position={box.position}
+                    ref={i === towerBoxes.length - 1 ? ref : undefined}
+                >
+                    <boxGeometry args={box.args} />
+                    <meshStandardMaterial color={box.color} />
+                </mesh>
+            ))}
+        </group>
+    );
 };
 
 export const Tower = React.forwardRef(TowerComponent);

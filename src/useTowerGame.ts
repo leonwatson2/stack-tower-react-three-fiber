@@ -1,25 +1,34 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Mesh, Box3 } from 'three';
+import { useCallback, useEffect, useRef } from 'react';
+import { Mesh, Box3, Group } from 'three';
 import { useFrame } from '@react-three/fiber';
-
-import { TOWER_BOUNDS, STARTING_SPEED, BOX_HEIGHT } from './constants';
-import { Controls, DIRECTION, StackingBox } from './Types';
 import { useKeyboardControls } from '@react-three/drei';
-import { TowerActionType, useTowerReducer, initialBoxes } from './towerReducer';
-import { boxIsOverLappingNeg, boxIsOverLappingPos } from './utils';
+
+import { TOWER_BOUNDS, STARTING_SPEED, BOX_HEIGHT } from './constants/towerConstants';
+import { Controls, DIRECTION, StackingBox } from './Types';
+import { useTowerReducer, initialBoxes } from './reducers/tower/towerReducer';
+import {
+    boxIsOverLappingNeg,
+    boxIsOverLappingPerfectly,
+    boxIsOverLappingPos,
+    roundBoxMinMaxToTwoDecimals,
+} from './utils';
+import { TowerActionType } from './reducers/tower';
 
 export const useTowerGame = () => {
     const lastBox = useRef<Mesh>();
     const movingBox = useRef<Mesh>();
-    const [{ direction, movingBoxStartingPosition, boxes, movingBoxDimesions }, dispatch] =
-    useTowerReducer();
+    const towerGroupRef = useRef<Group>();
 
-    const [wasPressed, setWasPressed] = useState(false);
-    const spacePressed = useKeyboardControls<Controls>((state) => state.hit);
+    const [{ direction, movingBoxStartingPosition, boxes, movingBoxDimesions }, dispatch] =
+        useTowerReducer();
+
+    const [sub] = useKeyboardControls<Controls>();
 
     const stackNewBox = useCallback(() => {
-        const lastBoxEdges = new Box3().setFromObject(lastBox.current);
-        const movingBoxEdges = new Box3().setFromObject(movingBox.current);
+        const box1 = new Box3().setFromObject(lastBox.current);
+        const box2 = new Box3().setFromObject(movingBox.current);
+        const [lastBoxEdges, movingBoxEdges] = roundBoxMinMaxToTwoDecimals(box1, box2);
+
         let newWidth = lastBoxEdges.max.x - lastBoxEdges.min.x;
         let newLength = lastBoxEdges.max.z - lastBoxEdges.min.z;
         let newStartX = lastBoxEdges.min.x + newWidth / 2;
@@ -37,16 +46,19 @@ export const useTowerGame = () => {
         } else if (boxIsOverLappingNeg('z', lastBoxEdges, movingBoxEdges)) {
             newLength = movingBoxEdges.max.z - lastBoxEdges.min.z;
             newStartZ = lastBoxEdges.min.z + newLength / 2;
+        } else if (boxIsOverLappingPerfectly(lastBoxEdges, movingBoxEdges)) {
+            dispatch({ type: 'TOGGLE_PERFECT_HIT' });
+            setTimeout(() => {
+                dispatch({ type: 'TOGGLE_PERFECT_HIT' });
+            }, 15000);
         } else {
             dispatch({ type: 'END_GAME' });
-
             return;
         }
-
         const newBox: StackingBox = {
             position: [newStartX, boxes.length * BOX_HEIGHT, newStartZ],
             args: [newWidth, BOX_HEIGHT, newLength],
-            color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+            color: `hsl(${boxes.length * 36}, 100%, 50%)`,
         };
 
         dispatch({ type: 'STACK_NEW_BOX', payload: { newBox } });
@@ -56,25 +68,35 @@ export const useTowerGame = () => {
         dispatch({ type: 'START_GAME', payload: { initialBoxes: initialBoxes } });
     }, []);
 
-    useFrame(() => {
-        if (spacePressed) {
-            if (!wasPressed) {
-                if (direction === DIRECTION.NONE) {
-                    dispatch({ type: 'START_GAME', payload: { initialBoxes: initialBoxes } });
-                    setWasPressed(true);
-                } else {
-                    stackNewBox();
-                    setWasPressed(true);
+    useEffect(() => {
+        const unsub = sub(
+            (state) => state.hit,
+            (hit) => {
+                if (hit) {
+                    if (direction === DIRECTION.NONE) {
+                        dispatch({ type: 'START_GAME', payload: { initialBoxes: initialBoxes } });
+                    } else {
+                        stackNewBox();
+                    }
                 }
-            }
-        } else {
-            if (wasPressed) setWasPressed(false);
-        }
+            },
+        );
+        return unsub;
+    }, [direction, stackNewBox]);
 
+    useFrame(() => {
         if (direction !== DIRECTION.NONE) moveInDirection[direction](movingBox.current, dispatch);
     });
 
-    return { movingBox, lastBox, boxes, movingBoxDimesions, direction, movingBoxStartingPosition };
+    return {
+        movingBox,
+        lastBox,
+        boxes,
+        movingBoxDimesions,
+        direction,
+        movingBoxStartingPosition,
+        towerGroupRef,
+    };
 };
 
 export const chooseRandomDirection: () => DIRECTION = () => {
@@ -90,8 +112,8 @@ export const chooseRandomDirection: () => DIRECTION = () => {
 };
 
 export const moveInDirection: Record<
-  DIRECTION,
-  (movingBox: Mesh, setDirection: React.Dispatch<TowerActionType>) => void
+    DIRECTION,
+    (movingBox: Mesh, setDirection: React.Dispatch<TowerActionType>) => void
 > = {
     [DIRECTION.POSITIVE_X]: (movingBox, setDirection) => {
         const { max } = new Box3().setFromObject(movingBox);
