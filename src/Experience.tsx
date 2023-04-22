@@ -5,31 +5,31 @@ import { Tower } from './components/Tower';
 import { MovingBox } from './MovingBox';
 import { useTowerGame } from './useTowerGame';
 import { CameraController } from './CameraController';
-import { BOX_HEIGHT, START_LOCATION } from './constants';
-import { Text3D } from '@react-three/drei';
+import { TowerLabels } from './TowerLabels';
 
 export const Experience: FC = () => {
-    const { movingBox, lastBox, boxes, movingBoxDimesions, movingBoxStartingPosition } =
-    useTowerGame();
+    const {
+        movingBox,
+        lastBox,
+        boxes,
+        movingBoxDimesions,
+        movingBoxStartingPosition,
+        towerGroupRef,
+    } = useTowerGame();
 
     return (
         <>
-            <CameraController height={boxes.length} />
-            <Debugger orbitControls />
+            <CameraController height={boxes.length} towerGroupRef={towerGroupRef} />
+            <Debugger />
             <Lights />
-            <Text3D
-                position={[START_LOCATION.x - 4, boxes.length * BOX_HEIGHT, START_LOCATION.x - 2]}
-                font={'./helvetiker_regular.typeface.json'}
-            >
-                {boxes.length}
-                <meshBasicMaterial attach="material" color="white" />
-            </Text3D>
+            <TowerLabels boxes={boxes} />
             <MovingBox
                 position={movingBoxStartingPosition}
                 ref={movingBox}
                 deminsions={movingBoxDimesions}
+                color={`hsl(${(boxes.length + 1) * 36}, 100%, 50%)`}
             />
-            <Tower towerBoxes={boxes} ref={lastBox} />
+            <Tower towerBoxes={boxes} ref={lastBox} groupRef={towerGroupRef} />
         </>
     );
 };

@@ -1,22 +1,62 @@
 import { FC, useEffect, useRef } from 'react';
-import { useThree } from '@react-three/fiber';
 import { CameraControls } from '@react-three/drei';
-import { BOX_HEIGHT } from './constants';
+import { TowerConstants, CameraConstants } from './constants';
+import { button, useControls } from 'leva';
+import { Group } from 'three';
 
-export const CameraController: FC<{ height: number }> = ({ height }) => {
+export const CameraController: FC<{
+    height: number;
+    towerGroupRef: React.MutableRefObject<Group>;
+}> = ({ height, towerGroupRef }) => {
     const cameraControlsRef = useRef<CameraControls>();
 
-    const { camera } = useThree();
-
+    const { position, enable } = useControls(
+        'camera',
+        {
+            enable: {
+                value: false,
+                label: 'Enable Camera Controls',
+            },
+            position: {
+                value: [20, 20, 14],
+            },
+            getCurrentPosition: button(() => {
+                console.log({
+                    position: cameraControlsRef.current?.camera.position,
+                    zoom: cameraControlsRef.current?.camera.zoom,
+                });
+            }),
+            saveState: button(() => {
+                cameraControlsRef.current.saveState();
+            }),
+        },
+        { collapsed: true },
+    );
     useEffect(() => {
-        if (height < 23) cameraControlsRef.current?.zoom((-camera.zoom / 68) * BOX_HEIGHT, true);
-        if (height > 23) cameraControlsRef.current?.zoom((-camera.zoom / 87.5) * BOX_HEIGHT, true);
-        () => cameraControlsRef.current?.dolly(1, true);
-    }, [height]);
+        const newCameraPosition = [
+            CameraConstants.START_POSITION[0],
+            CameraConstants.START_POSITION[1] + (2 * TowerConstants.BOX_HEIGHT * height) / 4,
+            CameraConstants.START_POSITION[2],
+        ] as [number, number, number];
+        const debugCameraPosition = [
+            position[0],
+            position[1] + TowerConstants.BOX_HEIGHT * height,
+            position[2],
+        ] as [number, number, number];
+        const currentCameraPosition = enable ? newCameraPosition : debugCameraPosition;
+        cameraControlsRef.current?.setLookAt(
+            ...currentCameraPosition,
+            towerGroupRef.current.position.x,
+            (3 * TowerConstants.BOX_HEIGHT * height) / 4,
+            towerGroupRef.current.position.z,
+            true,
+        );
+        towerGroupRef.current.position;
+    }, [height, cameraControlsRef]);
 
     return (
         <>
-            <CameraControls ref={cameraControlsRef} minDistance={0} enabled={true} />
+            <CameraControls ref={cameraControlsRef} enabled={true} />
         </>
     );
 };
