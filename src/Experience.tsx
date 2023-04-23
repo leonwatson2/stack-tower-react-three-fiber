@@ -27,13 +27,11 @@ export const Experience: FC = () => {
                 height={boxes.length}
                 towerGroupRef={towerGroupRef}
             />
-            <Debugger perf />
+            <Debugger />
             <Lights />
             <TowerLabels atStartMenu={atStartMenu} boxes={boxes} />
             <StartMenu
-                onStart={() => {
-                    startGame();
-                }}
+                onStart={startGame}
                 atStartMenu={atStartMenu}
             />
             <MovingBox

@@ -79,10 +79,8 @@ export const useTowerGame = () => {
             (hit) => {
                 if (hit) {
                     if (direction === DIRECTION.NONE || atStartMenu) {
-                        console.log('start game');
                         dispatch({ type: 'START_GAME', payload: { initialBoxes: initialBoxes } });
                     } else {
-                        console.log('Stack');
                         stackNewBox();
                     }
                 }
@@ -166,5 +164,5 @@ export const moveInDirection: Record<
         }
     },
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    [DIRECTION.NONE]: () => {},
+    [DIRECTION.NONE]: () => { },
 };
