@@ -31,11 +31,11 @@ export const towerReducer: Reducer<TowerStateType, TowerActionType> = (state, ac
                 action.payload.initialBoxes.length * TowerConstants.BOX_HEIGHT,
                 action.payload.initialBoxes.slice(-1)[0].position[2],
             ],
-
             movingBoxDimesions: {
                 width: action.payload.initialBoxes.slice(-1)[0].args[0],
                 length: action.payload.initialBoxes.slice(-1)[0].args[2],
             },
+            missedBoxes: [],
         };
 
     case 'STACK_NEW_BOX':
@@ -61,6 +61,7 @@ export const towerReducer: Reducer<TowerStateType, TowerActionType> = (state, ac
                 width: action.payload.newBox.args[0],
                 length: action.payload.newBox.args[2],
             },
+            missedBoxes: [...state.missedBoxes, action.payload.missedBox],
         };
     case 'TOGGLE_PERFECT_HIT':
         return {
@@ -132,6 +133,7 @@ const initialValues: TowerStateType = {
         TowerConstants.START_LOCATION.z,
     ],
     perfectHit: false,
+    missedBoxes: [],
 };
 
 export const useTowerReducer = (middleware?: (state: TowerStateType) => void) => {
