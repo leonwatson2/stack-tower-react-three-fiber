@@ -19,9 +19,14 @@ export const useTowerGame = () => {
     const movingBox = useRef<Mesh>();
     const towerGroupRef = useRef<Group>();
 
-    const [{ direction, movingBoxStartingPosition, boxes, movingBoxDimesions }, dispatch] =
-        useTowerReducer();
+    const [
+        { atStartMenu, direction, movingBoxStartingPosition, boxes, movingBoxDimesions },
+        dispatch,
+    ] = useTowerReducer();
 
+    const startGame = () => {
+        dispatch({ type: 'START_GAME', payload: { initialBoxes } });
+    };
     const [sub] = useKeyboardControls<Controls>();
 
     const stackNewBox = useCallback(() => {
@@ -65,7 +70,7 @@ export const useTowerGame = () => {
     }, [boxes]);
 
     useEffect(() => {
-        dispatch({ type: 'START_GAME', payload: { initialBoxes: initialBoxes } });
+        dispatch({ type: 'MAIN_MENU' });
     }, []);
 
     useEffect(() => {
@@ -73,7 +78,7 @@ export const useTowerGame = () => {
             (state) => state.hit,
             (hit) => {
                 if (hit) {
-                    if (direction === DIRECTION.NONE) {
+                    if (direction === DIRECTION.NONE || atStartMenu) {
                         dispatch({ type: 'START_GAME', payload: { initialBoxes: initialBoxes } });
                     } else {
                         stackNewBox();
@@ -82,13 +87,23 @@ export const useTowerGame = () => {
             },
         );
         return unsub;
-    }, [direction, stackNewBox]);
-
+    }, [direction, stackNewBox, atStartMenu]);
+    useEffect(() => {
+        const unsub = sub(
+            (state) => state.menu,
+            (menu) => {
+                if (menu) dispatch({ type: 'MAIN_MENU' });
+            },
+        );
+        return unsub;
+    }, []);
     useFrame(() => {
-        if (direction !== DIRECTION.NONE) moveInDirection[direction](movingBox.current, dispatch);
+        if (direction !== DIRECTION.NONE && !atStartMenu)
+            moveInDirection[direction](movingBox.current, dispatch);
     });
 
     return {
+        atStartMenu,
         movingBox,
         lastBox,
         boxes,
@@ -96,6 +111,7 @@ export const useTowerGame = () => {
         direction,
         movingBoxStartingPosition,
         towerGroupRef,
+        startGame,
     };
 };
 
@@ -148,5 +164,5 @@ export const moveInDirection: Record<
         }
     },
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    [DIRECTION.NONE]: () => {},
+    [DIRECTION.NONE]: () => { },
 };

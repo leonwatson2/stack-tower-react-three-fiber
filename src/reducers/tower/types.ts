@@ -15,6 +15,10 @@ interface TogglePerfectHitAction {
     type: 'TOGGLE_PERFECT_HIT';
 }
 
+interface MainMenuAction {
+    type: 'MAIN_MENU';
+}
+
 interface StartGameAction {
     type: 'START_GAME';
     payload: {
@@ -35,6 +39,7 @@ interface EndGameAction {
 }
 
 export type TowerActionType =
+    | MainMenuAction
     | StackNewBoxAction
     | GoOppositeDirectionAction
     | TogglePerfectHitAction
@@ -44,6 +49,7 @@ export type TowerActionType =
     | EndGameAction;
 
 export type TowerStateType = {
+    atStartMenu: boolean;
     direction: DIRECTION;
     movingBoxDimesions: { width: number; length: number };
     movingBoxStartingPosition: [x: number, y: number, z: number];

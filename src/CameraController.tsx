@@ -7,7 +7,8 @@ import { Group } from 'three';
 export const CameraController: FC<{
     height: number;
     towerGroupRef: React.MutableRefObject<Group>;
-}> = ({ height, towerGroupRef }) => {
+    atStartMenu: boolean;
+}> = ({ height, towerGroupRef, atStartMenu }) => {
     const cameraControlsRef = useRef<CameraControls>();
 
     const { position, enable } = useControls(
@@ -44,15 +45,19 @@ export const CameraController: FC<{
             position[2],
         ] as [number, number, number];
         const currentCameraPosition = enable ? newCameraPosition : debugCameraPosition;
-        cameraControlsRef.current?.setLookAt(
-            ...currentCameraPosition,
-            towerGroupRef.current.position.x,
-            (3 * TowerConstants.BOX_HEIGHT * height) / 4,
-            towerGroupRef.current.position.z,
-            true,
-        );
+        if (atStartMenu) {
+            cameraControlsRef.current?.setLookAt(13, 20, 45, 0, 10, 15, true);
+        } else {
+            cameraControlsRef.current?.setLookAt(
+                ...currentCameraPosition,
+                towerGroupRef.current.position.x,
+                (3 * TowerConstants.BOX_HEIGHT * height) / 4,
+                towerGroupRef.current.position.z,
+                true,
+            );
+        }
         towerGroupRef.current.position;
-    }, [height, cameraControlsRef]);
+    }, [height, cameraControlsRef, atStartMenu]);
 
     return (
         <>

@@ -15,6 +15,7 @@ const root = ReactDOM.createRoot(document.querySelector('#root'));
 const map: KeyboardControlsEntry<Controls>[] = [
     { name: Controls.hit, keys: ['Space'] },
     { name: Controls.reset, keys: ['r'] },
+    { name: Controls.menu, keys: ['KeyM'] },
 ];
 
 root.render(

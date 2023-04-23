@@ -6,6 +6,7 @@ import { MovingBox } from './MovingBox';
 import { useTowerGame } from './useTowerGame';
 import { CameraController } from './CameraController';
 import { TowerLabels } from './TowerLabels';
+import StartMenu from './components/StartMenu';
 
 export const Experience: FC = () => {
     const {
@@ -15,14 +16,24 @@ export const Experience: FC = () => {
         movingBoxDimesions,
         movingBoxStartingPosition,
         towerGroupRef,
+        atStartMenu,
+        startGame,
     } = useTowerGame();
 
     return (
         <>
-            <CameraController height={boxes.length} towerGroupRef={towerGroupRef} />
+            <CameraController
+                atStartMenu={atStartMenu}
+                height={boxes.length}
+                towerGroupRef={towerGroupRef}
+            />
             <Debugger />
             <Lights />
-            <TowerLabels boxes={boxes} />
+            <TowerLabels atStartMenu={atStartMenu} boxes={boxes} />
+            <StartMenu
+                onStart={startGame}
+                atStartMenu={atStartMenu}
+            />
             <MovingBox
                 position={movingBoxStartingPosition}
                 ref={movingBox}
