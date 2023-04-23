@@ -23,19 +23,18 @@ export const towerReducer: Reducer<TowerStateType, TowerActionType> = (state, ac
     case 'START_GAME':
         return {
             ...state,
+            atStartMenu: false,
             direction: chooseRandomDirection(),
             boxes: action.payload.initialBoxes,
             movingBoxStartingPosition: [
-                action.payload.initialBoxes[action.payload.initialBoxes.length - 1].position[0],
+                action.payload.initialBoxes.slice(-1)[0].position[0],
                 action.payload.initialBoxes.length * TowerConstants.BOX_HEIGHT,
-                action.payload.initialBoxes[action.payload.initialBoxes.length - 1].position[2],
+                action.payload.initialBoxes.slice(-1)[0].position[2],
             ],
 
             movingBoxDimesions: {
-                width: action.payload.initialBoxes[action.payload.initialBoxes.length - 1]
-                    .args[0],
-                length: action.payload.initialBoxes[action.payload.initialBoxes.length - 1]
-                    .args[2],
+                width: action.payload.initialBoxes.slice(-1)[0].args[0],
+                length: action.payload.initialBoxes.slice(-1)[0].args[2],
             },
         };
 
@@ -83,7 +82,13 @@ export const towerReducer: Reducer<TowerStateType, TowerActionType> = (state, ac
                 TowerConstants.START_LOCATION.z,
             ],
         };
-
+    case 'MAIN_MENU':
+        return {
+            ...state,
+            atStartMenu: true,
+            boxes: [],
+            movingBoxStartingPosition: [0, 0, 0],
+        };
     case 'RESET_GAME':
         return {
             ...state,
@@ -117,6 +122,7 @@ function getOppositeDirection(direction: DIRECTION) {
 }
 
 const initialValues: TowerStateType = {
+    atStartMenu: true,
     direction: DIRECTION.NONE,
     movingBoxDimesions: TowerConstants.START_DIMENSIONS,
     boxes: initialBoxes,

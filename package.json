@@ -21,6 +21,7 @@
     "vite": "^4.0.4"
   },
   "dependencies": {
+    "@react-spring/three": "^9.7.2",
     "@react-three/drei": "9.58",
     "@react-three/fiber": "^8.9.2",
     "leva": "^0.9.34",
