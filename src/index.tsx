@@ -30,6 +30,7 @@ root.render(
                 position: CameraConstants.START_POSITION,
             }}
             orthographic
+            shadows
         >
             <Experience />
         </Canvas>

@@ -55,6 +55,6 @@ export type TowerStateType = {
     movingBoxDimesions: { width: number; length: number };
     movingBoxStartingPosition: [x: number, y: number, z: number];
     boxes: Array<StackingBox>;
-    missedBoxes: Array<StackingBox>;
+    missedBoxes: Array<MissedBox>;
     perfectHit: boolean;
 };

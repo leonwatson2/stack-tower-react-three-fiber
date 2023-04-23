@@ -12,7 +12,7 @@ export type StackingBox = {
  * and falls to the ground
  */
 
-export type MissedBox = StackingBox | null;
+export type MissedBox = (StackingBox & { directionOverlapped: DIRECTION }) | null;
 
 export enum DIRECTION {
     POSITIVE_X,

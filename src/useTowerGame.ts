@@ -4,7 +4,7 @@ import { useFrame } from '@react-three/fiber';
 import { useKeyboardControls } from '@react-three/drei';
 
 import { TOWER_BOUNDS, STARTING_SPEED, BOX_HEIGHT } from './constants/towerConstants';
-import { Controls, DIRECTION, StackingBox } from './Types';
+import { Controls, DIRECTION, MissedBox, StackingBox } from './Types';
 import { useTowerReducer, initialBoxes } from './reducers/tower/towerReducer';
 import {
     boxIsOverLappingNeg,
@@ -170,13 +170,14 @@ export const useTowerGame = () => {
             color: `hsl(${boxes.length * 36}, 100%, 50%)`,
         };
 
-        const missedBox: StackingBox =
+        const missedBox: MissedBox =
             directionOverlapped === DIRECTION.NONE
                 ? null
                 : {
                     position: [missedStartX, boxes.length * BOX_HEIGHT, missedStartZ],
                     args: [missedWidth, BOX_HEIGHT, missedlength],
-                    color: `red`,
+                    color: `hsl(${boxes.length * 36}, 100%, 50%)`,
+                    directionOverlapped,
                 };
 
         dispatch({ type: 'STACK_NEW_BOX', payload: { newBox, missedBox } });
