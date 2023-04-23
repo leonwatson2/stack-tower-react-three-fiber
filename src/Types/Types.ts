@@ -20,6 +20,7 @@ export enum DIRECTION {
     POSITIVE_Z,
     NEGATIVE_Z,
     NONE,
+    ALL,
 }
 
 export enum Controls {

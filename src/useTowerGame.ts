@@ -10,6 +10,7 @@ import {
     boxIsOverLappingNeg,
     boxIsOverLappingPerfectly,
     boxIsOverLappingPos,
+    directionBoxesOverlap,
     roundBoxMinMaxToTwoDecimals,
 } from './utils';
 import { TowerActionType } from './reducers/tower';
@@ -51,10 +52,10 @@ export const useTowerGame = () => {
 
             const directionVariableMap: {
                 [key in DIRECTION]: {
-                    lengthValues: Box3[];
-                    widthValues: Box3[];
-                    missedWidthValues: Box3[];
-                    startValues: Box3[];
+                    lengthValues?: Box3[];
+                    widthValues?: Box3[];
+                    missedWidthValues?: Box3[];
+                    startValues?: Box3[];
                 };
             } = {
                 [DIRECTION.POSITIVE_X]: {
@@ -81,39 +82,29 @@ export const useTowerGame = () => {
                     missedWidthValues: prevPrev,
                     startValues: stackPrev,
                 },
-                [DIRECTION.NONE]: {
+                [DIRECTION.ALL]: {
                     lengthValues: prevPrev,
                     widthValues: prevPrev,
                     startValues: prevPrev,
                     missedWidthValues: prevPrev,
                 },
+                [DIRECTION.NONE]: {},
             };
 
             const length =
                 directionVariableMap[overlappedDirection].lengthValues[0].max.z -
                 directionVariableMap[overlappedDirection].lengthValues[1].min.z;
-
             const width =
                 directionVariableMap[overlappedDirection].widthValues[0].max.x -
                 directionVariableMap[overlappedDirection].widthValues[1].min.x;
-
-            const startX =
-                directionVariableMap[overlappedDirection].startValues[0].min.x + width / 2;
-
-            const startZ =
-                directionVariableMap[overlappedDirection].startValues[1].min.z + length / 2;
-
-            const missedWidth = stackBoxEdges.max.x - previousBoxEdges.max.x;
-            const missedlength = stackBoxEdges.max.z - stackBoxEdges.min.z;
-            const missedStartZ = previousBoxEdges.min.z + missedlength / 2;
-            const missedStartX = previousBoxEdges.max.x + missedWidth / 2;
-
             return {
-                width,
                 length,
-                startX,
-                startZ,
-                missedWidth,
+
+                width,
+
+                startX: directionVariableMap[overlappedDirection].startValues[0].min.x + width / 2,
+
+                startZ: directionVariableMap[overlappedDirection].startValues[1].min.z + length / 2,
             };
         }
         const newWidth = lastBoxEdges.max.x - lastBoxEdges.min.x;
@@ -122,34 +113,28 @@ export const useTowerGame = () => {
         let missedStartZ = 0;
         let missedWidth = 0;
         let missedlength = 0;
-        let directionOverlapped = DIRECTION.NONE;
-        if (boxIsOverLappingPos('x', lastBoxEdges, movingBoxEdges)) {
-            directionOverlapped = DIRECTION.POSITIVE_X;
+        const directionOverlapped = directionBoxesOverlap(lastBoxEdges, movingBoxEdges);
+        if (directionOverlapped === DIRECTION.POSITIVE_X) {
             missedlength = movingBoxEdges.max.z - movingBoxEdges.min.z;
             missedStartZ = lastBoxEdges.min.z + missedlength / 2;
             missedWidth = movingBoxEdges.max.x - lastBoxEdges.max.x;
             missedStartX = lastBoxEdges.max.x + missedWidth / 2;
-        } else if (boxIsOverLappingNeg('x', lastBoxEdges, movingBoxEdges)) {
-            directionOverlapped = DIRECTION.NEGATIVE_X;
-
+        } else if (directionOverlapped === DIRECTION.NEGATIVE_X) {
             missedlength = movingBoxEdges.max.z - movingBoxEdges.min.z;
             missedStartZ = lastBoxEdges.min.z + missedlength / 2;
             missedWidth = lastBoxEdges.min.x - movingBoxEdges.min.x;
             missedStartX = movingBoxEdges.min.x + missedWidth / 2;
-        } else if (boxIsOverLappingPos('z', lastBoxEdges, movingBoxEdges)) {
-            directionOverlapped = DIRECTION.POSITIVE_Z;
+        } else if (directionOverlapped === DIRECTION.POSITIVE_Z) {
             missedWidth = movingBoxEdges.max.x - movingBoxEdges.min.x;
             missedStartX = lastBoxEdges.min.x + missedWidth / 2;
             missedlength = movingBoxEdges.max.z - lastBoxEdges.max.z;
             missedStartZ = lastBoxEdges.max.z + missedlength / 2;
-        } else if (boxIsOverLappingNeg('z', lastBoxEdges, movingBoxEdges)) {
-            directionOverlapped = DIRECTION.NEGATIVE_Z;
-
+        } else if (directionOverlapped === DIRECTION.NEGATIVE_Z) {
             missedWidth = movingBoxEdges.max.x - movingBoxEdges.min.x;
             missedStartX = lastBoxEdges.min.x + missedWidth / 2;
             missedlength = lastBoxEdges.min.z - movingBoxEdges.min.z;
             missedStartZ = movingBoxEdges.min.z + missedlength / 2;
-        } else if (boxIsOverLappingPerfectly(lastBoxEdges, movingBoxEdges)) {
+        } else if (directionOverlapped === DIRECTION.ALL) {
             dispatch({ type: 'TOGGLE_PERFECT_HIT' });
             setTimeout(() => {
                 dispatch({ type: 'TOGGLE_PERFECT_HIT' });
