@@ -7,12 +7,20 @@ export type StackingBox = {
     color: string;
 };
 
+/**
+ * Box section that is missed by the player
+ * and falls to the ground
+ */
+
+export type MissedBox = (StackingBox & { directionOverlapped: DIRECTION }) | null;
+
 export enum DIRECTION {
     POSITIVE_X,
     NEGATIVE_X,
     POSITIVE_Z,
     NEGATIVE_Z,
     NONE,
+    ALL,
 }
 
 export enum Controls {

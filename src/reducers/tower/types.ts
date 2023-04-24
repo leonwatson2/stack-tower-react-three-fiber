@@ -1,9 +1,10 @@
-import { DIRECTION, StackingBox } from '../../Types';
+import { DIRECTION, MissedBox, StackingBox } from '../../Types';
 
 interface StackNewBoxAction {
     type: 'STACK_NEW_BOX';
     payload: {
         newBox: StackingBox;
+        missedBox: MissedBox;
     };
 }
 
@@ -54,5 +55,6 @@ export type TowerStateType = {
     movingBoxDimesions: { width: number; length: number };
     movingBoxStartingPosition: [x: number, y: number, z: number];
     boxes: Array<StackingBox>;
+    missedBoxes: Array<MissedBox>;
     perfectHit: boolean;
 };

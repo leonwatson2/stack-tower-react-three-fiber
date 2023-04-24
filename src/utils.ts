@@ -1,4 +1,5 @@
 import { Box3 } from 'three';
+import { DIRECTION } from './Types';
 
 export const boxIsOverLappingPos = (axis: 'x' | 'z', lastBox: Box3, movingBox: Box3) =>
     lastBox.min[axis] < movingBox.min[axis] &&
@@ -13,6 +14,25 @@ export const boxIsOverLappingPerfectly = (lastBox: Box3, movingBox: Box3) =>
     lastBox.max.x === movingBox.max.x &&
     lastBox.min.z === movingBox.min.z &&
     lastBox.max.z === movingBox.max.z;
+
+export const directionBoxesOverlap = (lastBox: Box3, movingBox: Box3) => {
+    if (boxIsOverLappingPos('x', lastBox, movingBox)) {
+        return DIRECTION.POSITIVE_X;
+    }
+    if (boxIsOverLappingNeg('x', lastBox, movingBox)) {
+        return DIRECTION.NEGATIVE_X;
+    }
+    if (boxIsOverLappingPos('z', lastBox, movingBox)) {
+        return DIRECTION.POSITIVE_Z;
+    }
+    if (boxIsOverLappingNeg('z', lastBox, movingBox)) {
+        return DIRECTION.NEGATIVE_Z;
+    }
+    if (boxIsOverLappingPerfectly(lastBox, movingBox)) {
+        return DIRECTION.ALL;
+    }
+    return DIRECTION.NONE;
+};
 
 export const roundBoxMinMaxToTwoDecimals = <T extends Box3[]>(
     ...args: T

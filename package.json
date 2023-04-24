@@ -24,6 +24,7 @@
     "@react-spring/three": "^9.7.2",
     "@react-three/drei": "9.58",
     "@react-three/fiber": "^8.9.2",
+    "@react-three/rapier": "^0.9.0",
     "leva": "^0.9.34",
     "r3f-perf": "^7.1.2",
     "react": "18.2",

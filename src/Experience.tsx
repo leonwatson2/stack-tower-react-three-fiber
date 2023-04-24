@@ -13,6 +13,7 @@ export const Experience: FC = () => {
         movingBox,
         lastBox,
         boxes,
+        missedBoxes,
         movingBoxDimesions,
         movingBoxStartingPosition,
         towerGroupRef,
@@ -30,17 +31,19 @@ export const Experience: FC = () => {
             <Debugger />
             <Lights />
             <TowerLabels atStartMenu={atStartMenu} boxes={boxes} />
-            <StartMenu
-                onStart={startGame}
-                atStartMenu={atStartMenu}
-            />
+            <StartMenu onStart={startGame} atStartMenu={atStartMenu} />
             <MovingBox
                 position={movingBoxStartingPosition}
                 ref={movingBox}
                 deminsions={movingBoxDimesions}
                 color={`hsl(${(boxes.length + 1) * 36}, 100%, 50%)`}
             />
-            <Tower towerBoxes={boxes} ref={lastBox} groupRef={towerGroupRef} />
+            <Tower
+                towerBoxes={boxes}
+                ref={lastBox}
+                groupRef={towerGroupRef}
+                missedBoxes={missedBoxes}
+            />
         </>
     );
 };
