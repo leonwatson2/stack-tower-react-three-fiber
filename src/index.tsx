@@ -1,15 +1,11 @@
-import React from 'react';
-import './style.css';
 import ReactDOM from 'react-dom/client';
-import { Canvas } from '@react-three/fiber';
-import { Experience } from './Experience';
-import { Leva } from 'leva';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+
 import { Controls } from './Types';
-
-// eslint-disable-next-line import/named
 import { KeyboardControls, KeyboardControlsEntry } from '@react-three/drei';
-import { CameraConstants } from './constants';
+import { CanvasWrapper } from './CanvasWrapper';
 
+import './style.css';
 const root = ReactDOM.createRoot(document.querySelector('#root'));
 
 const map: KeyboardControlsEntry<Controls>[] = [
@@ -18,22 +14,14 @@ const map: KeyboardControlsEntry<Controls>[] = [
     { name: Controls.menu, keys: ['KeyM'] },
 ];
 
+
+
 root.render(
     <KeyboardControls map={map}>
-        <Leva />
-        <Canvas
-            id={'game-canvas'}
-            camera={{
-                zoom: CameraConstants.START_ZOOM,
-                near: -50,
-                rotation: [0, 0, 0],
-                position: CameraConstants.START_POSITION,
-            }}
-            orthographic
-            shadows
-        >
-            <Experience />
-        </Canvas>
-        ,
-    </KeyboardControls>,
+        <BrowserRouter>
+            <Routes>
+                <Route path="*" element={<CanvasWrapper />} />
+            </Routes>
+        </BrowserRouter>
+    </KeyboardControls>
 );

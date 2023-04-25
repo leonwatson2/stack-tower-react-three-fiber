@@ -1,8 +1,11 @@
 import React, { ForwardRefRenderFunction } from 'react';
-import { DIRECTION, MissedBox, StackingBox } from '../Types';
 import { Group, Mesh } from 'three';
+
+import { Direction, MissedBox, StackingBox } from '../Types';
 import { Physics, RigidBody } from '@react-three/rapier';
 import { TowerConstants } from '../constants';
+import { wasPerfectHit } from '../utils';
+
 type TowerProps = {
     towerBoxes: Array<StackingBox>;
     missedBoxes: Array<MissedBox>;
@@ -31,21 +34,21 @@ const TowerComponent: ForwardRefRenderFunction<Mesh, TowerProps> = (
             </group>
 
             {missedBoxes.map((box, i) => {
-                if (box === null) return null;
+                if (wasPerfectHit(box.directionOverlapped)) return null;
                 const rotationZ =
                     box.args[0] > TowerConstants.START_DIMENSIONS.length / 2
                         ? 0
-                        : box.directionOverlapped === DIRECTION.POSITIVE_X
+                        : box.directionOverlapped === Direction.POSITIVE_X
                             ? Math.PI * -0.2
-                            : box.directionOverlapped === DIRECTION.NEGATIVE_X
+                            : box.directionOverlapped === Direction.NEGATIVE_X
                                 ? Math.PI * 0.2
                                 : 0;
                 const rotationX =
                     box.args[2] > TowerConstants.START_DIMENSIONS.width / 2
                         ? 0
-                        : box.directionOverlapped === DIRECTION.POSITIVE_Z
+                        : box.directionOverlapped === Direction.POSITIVE_Z
                             ? Math.PI * 0.2
-                            : box.directionOverlapped === DIRECTION.NEGATIVE_Z
+                            : box.directionOverlapped === Direction.NEGATIVE_Z
                                 ? Math.PI * -0.2
                                 : 0;
                 const chipRotation: [number, number, number] = [rotationX, 0, rotationZ];

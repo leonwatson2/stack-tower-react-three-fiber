@@ -35,7 +35,7 @@ export const TowerLabels: FC<{ boxes: Array<StackingBox>; atStartMenu: boolean }
             <Text3D
                 position={[
                     TowerConstants.START_LOCATION.x - position.x,
-                    boxes.length * TowerConstants.BOX_HEIGHT + 7,
+                    boxes.length * TowerConstants.BOX_HEIGHT + 1,
                     TowerConstants.START_LOCATION.z - position.z,
                 ]}
                 rotation={[rotation.x, rotation.y, rotation.z]}
