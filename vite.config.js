@@ -4,9 +4,9 @@ const isCodeSandbox = 'SANDBOX_URL' in process.env || 'CODESANDBOX_HOST' in proc
 
 export default {
     plugins:
-    [
-        react()
-    ],
+        [
+            react()
+        ],
     root: 'src/',
     publicDir: "../public/",
     base: './',
@@ -20,5 +20,14 @@ export default {
         outDir: '../dist',
         emptyOutDir: true,
         sourcemap: true
-    }
+    },
+    test: {
+
+        globals: true,
+
+        environment: 'jsdom',
+
+        setupFiles: './setupTests.js',
+
+    },
 }

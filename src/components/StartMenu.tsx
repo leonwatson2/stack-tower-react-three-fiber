@@ -4,7 +4,7 @@ import { folder, useControls } from 'leva';
 import { TowerConstants } from '../constants';
 import { useSprings, animated } from '@react-spring/three';
 
-const StartMenu: FC<{
+export const StartMenu: FC<{
     onStart: () => void;
     onAbout?: () => void;
     onContinue?: () => void;
@@ -77,4 +77,3 @@ const StartMenu: FC<{
     );
 };
 
-export default StartMenu;

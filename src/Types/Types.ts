@@ -11,10 +11,9 @@ export type StackingBox = {
  * Box section that is missed by the player
  * and falls to the ground
  */
+export type MissedBox = (StackingBox & { directionOverlapped: Direction });
 
-export type MissedBox = (StackingBox & { directionOverlapped: DIRECTION }) | null;
-
-export enum DIRECTION {
+export enum Direction {
     POSITIVE_X,
     NEGATIVE_X,
     POSITIVE_Z,
@@ -22,6 +21,8 @@ export enum DIRECTION {
     NONE,
     ALL,
 }
+
+export type OverlapDirections = Exclude<Direction, Direction.ALL>;
 
 export enum Controls {
     reset = 'reset',
