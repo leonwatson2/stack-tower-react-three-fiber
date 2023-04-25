@@ -2,10 +2,9 @@ import { useMemo, useEffect } from 'react';
 import { Phase } from '../Types';
 
 
-type PropTypes = { isEndGame: boolean, startGame: () => void, stackNewBox: () => void, phase: Phase };
+type PropTypes = { startGame: () => void, stackNewBox: () => void, phase: Phase };
 
 export const MouseControls: (props: PropTypes) => null = ({
-
     startGame,
     stackNewBox,
     phase,

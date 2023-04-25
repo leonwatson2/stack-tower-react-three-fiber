@@ -50,7 +50,7 @@ export const Experience: FC<{ debugMode: boolean }> = ({ debugMode }) => {
                 deminsions={movingBoxDimesions}
                 color={`hsl(${(boxes.length + 1) * 36}, 100%, 50%)`}
             />
-            {enabled && <MouseControls startGame={startGame} isEndGame={isEndGame} phase={phase} stackNewBox={stackNewBox} />}
+            {enabled && <MouseControls startGame={startGame} phase={phase} stackNewBox={stackNewBox} />}
             <Tower
                 towerBoxes={boxes}
                 ref={lastBox}

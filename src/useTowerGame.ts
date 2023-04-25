@@ -147,7 +147,6 @@ export const useTowerGame = () => {
         boxes,
         missedBoxes,
         movingBoxDimesions,
-        direction,
         movingBoxStartingPosition,
         towerGroupRef,
         isEndGame,
