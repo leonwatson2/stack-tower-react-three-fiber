@@ -1,5 +1,5 @@
 import { Reducer, useReducer } from 'react';
-import { Direction, StackingBox } from '../../Types';
+import { Direction, Phase, StackingBox } from '../../Types';
 import { TowerConstants } from '../../constants';
 import { chooseRandomDirection } from '../../useTowerGame';
 import { TowerActionType, TowerStateType } from './types';
@@ -13,7 +13,7 @@ export const initialBoxes: Array<StackingBox> = [
             TowerConstants.START_DIMENSIONS.length,
         ],
         color: 'darkcyan',
-    },
+    }
 ]
 
 
@@ -23,6 +23,7 @@ export const towerReducer: Reducer<TowerStateType, TowerActionType> = (state, ac
         case 'START_GAME':
             return {
                 ...state,
+                phase: Phase.PLAYING,
                 atStartMenu: false,
                 isEndGame: false,
                 direction: newDirection,
@@ -76,6 +77,7 @@ export const towerReducer: Reducer<TowerStateType, TowerActionType> = (state, ac
         case 'END_GAME':
             return {
                 ...state,
+                phase: Phase.END_GAME,
                 isEndGame: true,
                 direction: Direction.ALL,
                 movingBoxStartingPosition: [
@@ -87,6 +89,7 @@ export const towerReducer: Reducer<TowerStateType, TowerActionType> = (state, ac
         case 'MAIN_MENU':
             return {
                 ...state,
+                phase: Phase.START_MENU,
                 atStartMenu: true,
                 boxes: [],
                 movingBoxStartingPosition: [0, 0, 0],
@@ -125,6 +128,7 @@ function getOppositeDirection(direction: Direction) {
 }
 
 const initialValues: TowerStateType = {
+    phase: Phase.START_MENU,
     atStartMenu: true,
     isEndGame: false,
     direction: Direction.NONE,

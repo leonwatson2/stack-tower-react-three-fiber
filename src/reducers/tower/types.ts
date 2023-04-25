@@ -1,4 +1,4 @@
-import { Direction, MissedBox, StackingBox } from '../../Types';
+import { Direction, MissedBox, Phase, StackingBox } from '../../Types';
 
 interface StackNewBoxAction {
     type: 'STACK_NEW_BOX';
@@ -49,7 +49,9 @@ export type TowerActionType =
     | PauseGameAction
     | EndGameAction;
 
+
 export type TowerStateType = {
+    phase: Phase;
     atStartMenu: boolean;
     isEndGame: boolean,
     direction: Direction;

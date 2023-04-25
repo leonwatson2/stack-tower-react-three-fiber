@@ -1,13 +1,13 @@
 import { FC } from 'react';
-import { StackingBox } from './Types';
+import { Phase, StackingBox } from './Types';
 import { Text3D } from '@react-three/drei';
 import { TowerConstants } from './constants';
 import { useControls } from 'leva';
 import { useSpring, animated } from '@react-spring/three';
 
-export const TowerLabels: FC<{ boxes: Array<StackingBox>; atStartMenu: boolean }> = ({
+export const TowerLabels: FC<{ boxes: Array<StackingBox>; phase: Phase }> = ({
     boxes,
-    atStartMenu,
+    phase
 }) => {
     const { position, rotation } = useControls(
         'Tower Labels',
@@ -25,10 +25,10 @@ export const TowerLabels: FC<{ boxes: Array<StackingBox>; atStartMenu: boolean }
     );
     const [{ scale }] = useSpring(
         () => ({
-            scale: atStartMenu || boxes.length < 1 ? 0 : 1,
-            delay: atStartMenu || boxes.length < 1 ? 0 : 300,
+            scale: phase === Phase.START_MENU || boxes.length < 1 ? 0 : 1,
+            delay: phase === Phase.START_MENU || boxes.length < 1 ? 0 : 300,
         }),
-        [atStartMenu, boxes],
+        [phase, boxes],
     );
     return (
         <animated.mesh scale={scale}>

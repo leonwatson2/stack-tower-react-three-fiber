@@ -32,12 +32,12 @@ export const useTowerGame = () => {
             movingBoxDimesions,
             missedBoxes,
             isEndGame,
+            phase,
         },
         dispatch,
     ] = useTowerReducer();
 
     const startGame = useCallback(() => {
-        console.log('start')
         dispatch({ type: 'START_GAME', payload: { initialBoxes } });
     }, [dispatch]);
     const [sub] = useKeyboardControls<Controls>();
@@ -147,12 +147,12 @@ export const useTowerGame = () => {
         boxes,
         missedBoxes,
         movingBoxDimesions,
-        direction,
         movingBoxStartingPosition,
         towerGroupRef,
         isEndGame,
         startGame,
         stackNewBox,
+        phase
     };
 };
 

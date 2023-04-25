@@ -1,31 +1,28 @@
 import { useMemo, useEffect } from 'react';
+import { Phase } from '../Types';
 
 
-type PropTypes = { isEndGame: boolean, atStartMenu: boolean, startGame: () => void, stackNewBox: () => void };
+type PropTypes = { startGame: () => void, stackNewBox: () => void, phase: Phase };
 
 export const MouseControls: (props: PropTypes) => null = ({
-    isEndGame,
-    atStartMenu,
     startGame,
     stackNewBox,
+    phase,
 }) => {
-    const mouseEventCallback = useMemo(() => {
-        return isEndGame || atStartMenu ?
-            startGame :
-            stackNewBox
-    }, [startGame, stackNewBox, isEndGame, atStartMenu])
+    const mouseEventArgs: [keyof DocumentEventMap, () => void] = useMemo(() => {
+        return phase === Phase.PLAYING ?
+            ['mousedown', stackNewBox] :
+            ['dblclick', startGame]
+    }, [startGame, stackNewBox, phase])
 
     useEffect(() => {
-        const mouseEvent: keyof DocumentEventMap = isEndGame || atStartMenu ? 'dblclick' : 'mousedown';
 
         setTimeout(() => {
-            document.addEventListener(mouseEvent, mouseEventCallback)
-
+            document.addEventListener(...mouseEventArgs)
         }, 300)
-
         return () => {
-            document.removeEventListener(mouseEvent, mouseEventCallback)
+            document.removeEventListener(...mouseEventArgs)
         }
-    }, [isEndGame, atStartMenu, mouseEventCallback])
+    }, [mouseEventArgs])
     return null;
 }
