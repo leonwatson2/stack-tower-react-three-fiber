@@ -21,7 +21,7 @@ export const StartMenu: FC<{
         }),
         [atStartMenu],
     );
-    const { position } = useControls(
+    useControls(
         'Start Menu',
         {
             position: { value: [0, 5, 15], step: 0.1 },
