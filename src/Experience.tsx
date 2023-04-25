@@ -22,7 +22,6 @@ export const Experience: FC<{ debugMode: boolean }> = ({ debugMode }) => {
         movingBoxStartingPosition,
         towerGroupRef,
         atStartMenu,
-        direction,
         isEndGame,
         phase,
         startGame,
@@ -43,7 +42,7 @@ export const Experience: FC<{ debugMode: boolean }> = ({ debugMode }) => {
             />
             <Debugger />
             <Lights />
-            <TowerLabels atStartMenu={atStartMenu} boxes={boxes} />
+            <TowerLabels phase={phase} boxes={boxes} />
             <StartMenu onStart={startGame} atStartMenu={atStartMenu} />
             <MovingBox
                 position={movingBoxStartingPosition}
