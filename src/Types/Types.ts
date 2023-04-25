@@ -22,6 +22,16 @@ export enum Direction {
     ALL,
 }
 
+/**
+ * Phases of the game
+ */
+export enum Phase {
+    START_MENU,
+    PLAYING,
+    PAUSED,
+    END_GAME,
+}
+
 export type OverlapDirections = Exclude<Direction, Direction.ALL>;
 
 export enum Controls {

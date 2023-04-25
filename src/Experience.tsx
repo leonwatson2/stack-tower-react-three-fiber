@@ -24,6 +24,7 @@ export const Experience: FC<{ debugMode: boolean }> = ({ debugMode }) => {
         atStartMenu,
         direction,
         isEndGame,
+        phase,
         startGame,
         stackNewBox,
     } = useTowerGame();
@@ -52,7 +53,7 @@ export const Experience: FC<{ debugMode: boolean }> = ({ debugMode }) => {
                 deminsions={movingBoxDimesions}
                 color={`hsl(${(boxes.length + 1) * 36}, 100%, 50%)`}
             />
-            {enabled && <MouseControls startGame={startGame} isEndGame={isEndGame} atStartMenu={atStartMenu} stackNewBox={stackNewBox} />}
+            {enabled && <MouseControls startGame={startGame} isEndGame={isEndGame} phase={phase} stackNewBox={stackNewBox} />}
             <Tower
                 towerBoxes={boxes}
                 ref={lastBox}
