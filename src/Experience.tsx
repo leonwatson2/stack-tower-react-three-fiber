@@ -37,11 +37,9 @@ export const Experience: FC<{ debugMode: boolean }> = ({ debugMode }) => {
     return (
         <>
             <CameraController
-                atStartMenu={atStartMenu}
                 height={boxes.length}
                 towerGroupRef={towerGroupRef}
-                direction={direction}
-                isEndGame={isEndGame}
+                phase={phase}
             />
             <Debugger />
             <Lights />

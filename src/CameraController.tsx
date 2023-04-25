@@ -3,15 +3,13 @@ import { CameraControls } from '@react-three/drei';
 import { TowerConstants, CameraConstants } from './constants';
 import { button, useControls } from 'leva';
 import { Group } from 'three';
-import { Direction } from './Types';
+import { Phase } from './Types';
 import * as THREE from 'three';
 export const CameraController: FC<{
     height: number;
     towerGroupRef: React.MutableRefObject<Group>;
-    atStartMenu: boolean;
-    direction: Direction;
-    isEndGame: boolean;
-}> = ({ height, towerGroupRef, atStartMenu, direction, isEndGame }) => {
+    phase: Phase;
+}> = ({ height, towerGroupRef, phase }) => {
     const cameraControlsRef = useRef<CameraControls>();
 
     const lookAtWholeTower = () => {
@@ -60,16 +58,16 @@ export const CameraController: FC<{
     useEffect(() => {
         const newCameraPosition = [
             CameraConstants.START_POSITION[0],
-            CameraConstants.START_POSITION[1] + (2 * TowerConstants.BOX_HEIGHT * height) / 4,
+            CameraConstants.START_POSITION[1] + (3 * TowerConstants.BOX_HEIGHT * height) / 4,
             CameraConstants.START_POSITION[2],
         ] as [number, number, number];
 
 
-        if (atStartMenu) {
+        if (phase === Phase.START_MENU) {
             cameraControlsRef.current?.setLookAt(13, 20, 45, 0, 10, 15, true);
-        } else if (Direction.ALL === direction) {
+        } else if (phase === Phase.END_GAME) {
             lookAtWholeTower();
-        } else {
+        } else if (phase === Phase.PLAYING) {
             cameraControlsRef.current?.setLookAt(
                 ...newCameraPosition,
                 towerGroupRef.current.position.x,
@@ -80,11 +78,11 @@ export const CameraController: FC<{
             cameraControlsRef.current?.zoomTo(CameraConstants.START_ZOOM, true);
 
         }
-    }, [height, cameraControlsRef, atStartMenu, direction]);
+    }, [height, cameraControlsRef, phase]);
 
     useEffect(() => {
         const oldControls = { ...cameraControlsRef.current?.mouseButtons };
-        if (cameraControlsRef.current && !isEndGame) {
+        if (cameraControlsRef.current && phase === Phase.PLAYING) {
             console.log(cameraControlsRef.current.mouseButtons, THREE.MOUSE)
             cameraControlsRef.current.mouseButtons.left = 0;
             cameraControlsRef.current.mouseButtons.middle = 0;
@@ -97,7 +95,7 @@ export const CameraController: FC<{
                 cameraControlsRef.current.mouseButtons = oldControls;
             }
         }
-    }, [isEndGame])
+    }, [phase])
     return (
         <>
             <CameraControls ref={cameraControlsRef} enabled={true} />
