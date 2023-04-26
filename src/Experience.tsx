@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useEffect, MutableRefObject } from 'react';
 import { useControls } from 'leva';
 
 import { Debugger } from './Debugger';
@@ -10,9 +10,10 @@ import { TowerLabels } from './TowerLabels';
 import { Tower } from './components/Tower';
 import { StartMenu } from './components/StartMenu';
 import { MouseControls } from './Controls/MouseControls';
+import { SoundTypes } from './SoundsHub';
 
 
-export const Experience: FC<{ debugMode: boolean }> = ({ debugMode }) => {
+export const Experience: FC<{ debugMode: boolean, sounds: MutableRefObject<(sound: SoundTypes) => void> }> = ({ debugMode, sounds }) => {
     const {
         movingBox,
         lastBox,
@@ -33,6 +34,11 @@ export const Experience: FC<{ debugMode: boolean }> = ({ debugMode }) => {
         }
     }, { collapsed: false });
 
+    useEffect(() => {
+        if (boxes.length > 1) {
+            sounds.current(SoundTypes.BLOCK_STACK);
+        }
+    }, [boxes])
     return (
         <>
             <CameraController
