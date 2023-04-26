@@ -7,6 +7,7 @@ body,
     width: 100%;
     height: 100%;
     background: #424554;
+    background: linear-gradient(155deg, #424554 20%, #a5a3a3);
 }
 
 

@@ -1,28 +1,29 @@
-import { useMemo, useEffect } from 'react';
+import { FC, useMemo } from 'react';
 import { Phase } from '../Types';
+import { TowerConstants } from '../constants';
 
 
 type PropTypes = { startGame: () => void, stackNewBox: () => void, phase: Phase };
 
-export const MouseControls: (props: PropTypes) => null = ({
+export const MouseControls: FC<PropTypes> = ({
     startGame,
     stackNewBox,
     phase,
 }) => {
-    const mouseEventArgs: [keyof DocumentEventMap, () => void] = useMemo(() => {
+    const mouseEventArgs: Record<string, () => void> = useMemo(() => {
         return phase === Phase.PLAYING ?
-            ['mousedown', stackNewBox] :
-            ['dblclick', startGame]
+            { 'onPointerDown': stackNewBox } :
+            { 'onDoubleClick': startGame }
     }, [startGame, stackNewBox, phase])
 
-    useEffect(() => {
+    return <mesh
+        {...mouseEventArgs}
+        position-z={phase === Phase.END_GAME ? 0 : -TowerConstants.START_DIMENSIONS.length}
 
-        setTimeout(() => {
-            document.addEventListener(...mouseEventArgs)
-        }, 300)
-        return () => {
-            document.removeEventListener(...mouseEventArgs)
-        }
-    }, [mouseEventArgs])
-    return null;
+        rotation-x={phase === Phase.END_GAME ? 0 : Math.PI * .5}
+        scale-x={phase === Phase.END_GAME ? 1 : 20}
+        position-y={-TowerConstants.BOX_HEIGHT}>
+        <boxGeometry args={[3000, .2, 3000]} />
+        <meshStandardMaterial color={'#000000'} transparent opacity={0} />
+    </mesh>;
 }

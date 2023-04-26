@@ -1,7 +1,7 @@
 import { FC, useRef } from 'react';
-import { Text3D } from '@react-three/drei';
+import { Text3D, Center } from '@react-three/drei';
 import { folder, useControls } from 'leva';
-import { TowerConstants } from '../constants';
+import { CameraConstants, TowerConstants } from '../constants';
 import { useSprings, animated } from '@react-spring/three';
 
 export const StartMenu: FC<{
@@ -47,7 +47,7 @@ export const StartMenu: FC<{
         },
     ];
     return (
-        <group ref={groupRef}>
+        <group ref={groupRef} scale={10} position={CameraConstants.MENU_POSITION}>
             <Text3D position={[0, 1, -5]} font={TowerConstants.FONT_FACE}>
                 Tower of Dat Boi
                 <color attach="material" args={['red']} />
@@ -59,17 +59,21 @@ export const StartMenu: FC<{
                     position={springs[index].position}
                 >
                     <group onPointerUp={action}>
-                        <mesh rotation-y={Math.PI * 2} position={[2, 0.1, -0.2]}>
-                            <boxGeometry attach="geometry" args={[5, 1.5, 0.5]} />
+                        <mesh rotation-y={Math.PI * 2}
+                            position={[0, 0, -0.2]}
+                        >
+                            <boxGeometry attach="geometry" args={[8, 1.5, 0.5]} />
                             <meshBasicMaterial
                                 attach="material"
                                 color={`hsl(${(index + 1) * 40}, 100%, 50%)`}
                             />
                         </mesh>
-                        <Text3D font={TowerConstants.FONT_FACE} scale={[0.75, 0.75, 0.75]}>
-                            {text}
-                            <meshBasicMaterial attach="material" color="white" />
-                        </Text3D>
+                        <Center>
+                            <Text3D font={TowerConstants.FONT_FACE} scale={[0.75, 0.75, 0.75]}>
+                                {text}
+                                <meshBasicMaterial attach="material" color="white" />
+                            </Text3D>
+                        </Center>
                     </group>
                 </animated.mesh>
             ))}

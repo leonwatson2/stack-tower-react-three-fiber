@@ -1,16 +1,16 @@
-import { Box3 } from 'three';
+import * as THREE from 'three';
 import { Direction, OverlapDirections, StackingBox } from './Types';
 import { TowerConstants } from './constants';
 
-export const boxIsOverLappingPos = (axis: 'x' | 'z', lastBox: Box3, movingBox: Box3) =>
+export const boxIsOverLappingPos = (axis: 'x' | 'z', lastBox: THREE.Box3, movingBox: THREE.Box3) =>
     lastBox.min[axis] < movingBox.min[axis] &&
     lastBox.max[axis] < movingBox.max[axis] &&
     lastBox.max[axis] > movingBox.min[axis];
-export const boxIsOverLappingNeg = (axis: 'x' | 'z', lastBox: Box3, movingBox: Box3) =>
+export const boxIsOverLappingNeg = (axis: 'x' | 'z', lastBox: THREE.Box3, movingBox: THREE.Box3) =>
     lastBox.min[axis] > movingBox.min[axis] &&
     lastBox.max[axis] > movingBox.max[axis] &&
     lastBox.min[axis] < movingBox.max[axis];
-export const boxIsOverLappingPerfectly = (lastBox: Box3, movingBox: Box3) =>
+export const boxIsOverLappingPerfectly = (lastBox: THREE.Box3, movingBox: THREE.Box3) =>
     lastBox.min.x === movingBox.min.x &&
     lastBox.max.x === movingBox.max.x &&
     lastBox.min.z === movingBox.min.z &&
@@ -18,10 +18,8 @@ export const boxIsOverLappingPerfectly = (lastBox: Box3, movingBox: Box3) =>
 
 export const wasPerfectHit = (direction: Direction) => direction === Direction.NONE;
 
-export const directionBoxesOverlap = (lastBox: Box3, movingBox: Box3) => {
+export const directionBoxesOverlap = (lastBox: THREE.Box3, movingBox: THREE.Box3) => {
     if (boxIsOverLappingPos('x', lastBox, movingBox)) {
-        console.log({ lastBox, movingBox })
-
         return Direction.POSITIVE_X;
     }
     if (boxIsOverLappingNeg('x', lastBox, movingBox)) {
@@ -39,9 +37,9 @@ export const directionBoxesOverlap = (lastBox: Box3, movingBox: Box3) => {
     return Direction.ALL;
 };
 
-export const roundBoxMinMaxToTwoDecimals = <T extends Box3[]>(
+export const roundBoxMinMaxToTwoDecimals = <T extends THREE.Box3[]>(
     ...args: T
-): { [K in keyof T]: Box3 } => {
+): { [K in keyof T]: THREE.Box3 } => {
     const rV = args.map((box) => ({
         ...box,
         min: {
@@ -54,12 +52,12 @@ export const roundBoxMinMaxToTwoDecimals = <T extends Box3[]>(
             y: +box.max.y.toFixed(2),
             z: +box.max.z.toFixed(2),
         },
-    })) as { [K in keyof T]: Box3 };
+    })) as { [K in keyof T]: THREE.Box3 };
     return rV;
 };
 
 
-export const getNewStackBoxValues: (overlappedDirection: OverlapDirections, previousBoxEdges: Box3, stackBoxEdges: Box3, numberOfBoxes: number
+export const getNewStackBoxValues: (overlappedDirection: OverlapDirections, previousBoxEdges: THREE.Box3, stackBoxEdges: THREE.Box3, numberOfBoxes: number
 ) => StackingBox = (
     overlappedDirection,
     previousBoxEdges,
@@ -72,10 +70,10 @@ export const getNewStackBoxValues: (overlappedDirection: OverlapDirections, prev
 
         const directionVariableMap: {
             [key in OverlapDirections]: {
-                lengthValues?: Box3[];
-                widthValues?: Box3[];
-                missedWidthValues?: Box3[];
-                startValues?: Box3[];
+                lengthValues?: THREE.Box3[];
+                widthValues?: THREE.Box3[];
+                missedWidthValues?: THREE.Box3[];
+                startValues?: THREE.Box3[];
             };
         } = {
             [Direction.POSITIVE_X]: {
