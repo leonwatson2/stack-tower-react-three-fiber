@@ -21,7 +21,10 @@ export const SoundsHub: FC<{ soundRef: MutableRefObject<(sound: SoundTypes) => v
     const playSound = (sound: SoundTypes) => {
         switch (sound) {
             case SoundTypes.BLOCK_STACK:
+                blockStackAudio.pause();
+                blockStackAudio.currentTime = 0;
                 blockStackAudio.play();
+                navigator.vibrate(100);
                 break;
         }
     }
