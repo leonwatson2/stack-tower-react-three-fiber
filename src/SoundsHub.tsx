@@ -17,7 +17,7 @@ const volumeMap = {
     high: .75,
 }
 export const SoundsHub: FC<{ soundRef: MutableRefObject<(sound: SoundTypes) => void> }> = ({ soundRef }) => {
-    const [volumeState, setVolumeState] = useState<'off' | 'low' | 'high'>('high');
+    const [volumeState, setVolumeState] = useState<keyof typeof volumeMap>('high');
     const playSound = (sound: SoundTypes) => {
         switch (sound) {
             case SoundTypes.BLOCK_STACK:
