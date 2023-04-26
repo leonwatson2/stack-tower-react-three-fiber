@@ -23,7 +23,8 @@ interface MainMenuAction {
 interface StartGameAction {
     type: 'START_GAME';
     payload: {
-        initialBoxes: StackingBox[];
+        boxes: Array<StackingBox>;
+        missedBoxes: Array<MissedBox>;
     };
 }
 

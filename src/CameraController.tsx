@@ -2,12 +2,11 @@ import { FC, useEffect, useRef } from 'react';
 import { CameraControls } from '@react-three/drei';
 import { TowerConstants, CameraConstants } from './constants';
 import { button, useControls } from 'leva';
-import { Group } from 'three';
-import { Phase } from './Types';
 import * as THREE from 'three';
+import { Phase } from './Types';
 export const CameraController: FC<{
     height: number;
-    towerGroupRef: React.MutableRefObject<Group>;
+    towerGroupRef: React.MutableRefObject<THREE.Group>;
     phase: Phase;
 }> = ({ height, towerGroupRef, phase }) => {
     const cameraControlsRef = useRef<CameraControls>();
@@ -15,14 +14,15 @@ export const CameraController: FC<{
     const lookAtWholeTower = () => {
 
         cameraControlsRef.current?.setLookAt(
-            CameraConstants.START_POSITION[0] + 10,
-            CameraConstants.START_POSITION[1] + 10,
-            CameraConstants.START_POSITION[2] + 10,
+            CameraConstants.START_POSITION[0] + 100,
+            CameraConstants.START_POSITION[1] + (3 * TowerConstants.BOX_HEIGHT * height) / 5,
+            CameraConstants.START_POSITION[2] + 100,
             towerGroupRef.current.position.x,
             TowerConstants.BOX_HEIGHT * height / 2,
             towerGroupRef.current.position.z,
+            true
         )
-        cameraControlsRef.current?.zoomTo(25, true);
+        cameraControlsRef.current?.zoomTo(1.4, true);
 
     }
 
@@ -58,20 +58,22 @@ export const CameraController: FC<{
     useEffect(() => {
         const newCameraPosition = [
             CameraConstants.START_POSITION[0],
-            CameraConstants.START_POSITION[1] + (3 * TowerConstants.BOX_HEIGHT * height) / 4,
+            CameraConstants.START_POSITION[1] + TowerConstants.BOX_HEIGHT * height,
             CameraConstants.START_POSITION[2],
         ] as [number, number, number];
 
 
         if (phase === Phase.START_MENU) {
-            cameraControlsRef.current?.setLookAt(13, 20, 45, 0, 10, 15, true);
+            cameraControlsRef.current?.setLookAt(CameraConstants.MENU_POSITION[0], 100, CameraConstants.MENU_POSITION[2] + 250, ...CameraConstants.MENU_POSITION, true);
+            cameraControlsRef.current?.zoomTo(3.5, true);
+
         } else if (phase === Phase.END_GAME) {
             lookAtWholeTower();
         } else if (phase === Phase.PLAYING) {
             cameraControlsRef.current?.setLookAt(
                 ...newCameraPosition,
                 towerGroupRef.current.position.x,
-                (3 * TowerConstants.BOX_HEIGHT * height) / 4,
+                (4 * TowerConstants.BOX_HEIGHT * height) / 4,
                 towerGroupRef.current.position.z,
                 true,
             );
@@ -83,7 +85,6 @@ export const CameraController: FC<{
     useEffect(() => {
         const oldControls = { ...cameraControlsRef.current?.mouseButtons };
         if (cameraControlsRef.current && phase === Phase.PLAYING) {
-            console.log(cameraControlsRef.current.mouseButtons, THREE.MOUSE)
             cameraControlsRef.current.mouseButtons.left = 0;
             cameraControlsRef.current.mouseButtons.middle = 0;
             cameraControlsRef.current.mouseButtons.right = 0;

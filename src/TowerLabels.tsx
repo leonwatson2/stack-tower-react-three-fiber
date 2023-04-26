@@ -13,7 +13,7 @@ export const TowerLabels: FC<{ boxes: Array<StackingBox>; phase: Phase }> = ({
         'Tower Labels',
         {
             position: {
-                value: { x: 1.8, y: 0, z: 1.4 },
+                value: { x: 6.6, y: 0, z: 20 },
                 step: 0.2,
             },
             rotation: {
@@ -33,9 +33,10 @@ export const TowerLabels: FC<{ boxes: Array<StackingBox>; phase: Phase }> = ({
     return (
         <animated.mesh scale={scale}>
             <Text3D
+                scale={4}
                 position={[
                     TowerConstants.START_LOCATION.x - position.x,
-                    boxes.length * TowerConstants.BOX_HEIGHT + 1,
+                    boxes.length * TowerConstants.BOX_HEIGHT + 10,
                     TowerConstants.START_LOCATION.z - position.z,
                 ]}
                 rotation={[rotation.x, rotation.y, rotation.z]}

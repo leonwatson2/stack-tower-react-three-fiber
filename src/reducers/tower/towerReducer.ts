@@ -1,20 +1,26 @@
 import { Reducer, useReducer } from 'react';
-import { Direction, Phase, StackingBox } from '../../Types';
+import { Direction, MissedBox, Phase, StackingBox } from '../../Types';
 import { TowerConstants } from '../../constants';
-import { chooseRandomDirection } from '../../useTowerGame';
 import { TowerActionType, TowerStateType } from './types';
+import { chooseRandomDirection } from '../../__tests__/utils';
 
-export const initialBoxes: Array<StackingBox> = [
-    {
-        position: [TowerConstants.START_LOCATION.x, 0, TowerConstants.START_LOCATION.z],
-        args: [
-            TowerConstants.START_DIMENSIONS.width,
-            TowerConstants.BOX_HEIGHT,
-            TowerConstants.START_DIMENSIONS.length,
-        ],
-        color: 'darkcyan',
-    }
-]
+export const initialBoxes: { boxes: Array<StackingBox>, missedBoxes: Array<MissedBox> } =
+{
+    boxes: [
+        {
+            position: [TowerConstants.START_LOCATION.x, 0, TowerConstants.START_LOCATION.z],
+            args: [
+                TowerConstants.START_DIMENSIONS.width,
+                TowerConstants.BOX_HEIGHT,
+                TowerConstants.START_DIMENSIONS.length,
+            ],
+            color: 'darkcyan',
+        }
+    ],
+    missedBoxes: []
+
+}
+
 
 
 export const towerReducer: Reducer<TowerStateType, TowerActionType> = (state, action) => {
@@ -27,17 +33,17 @@ export const towerReducer: Reducer<TowerStateType, TowerActionType> = (state, ac
                 atStartMenu: false,
                 isEndGame: false,
                 direction: newDirection,
-                boxes: action.payload.initialBoxes,
+                boxes: action.payload.boxes,
+                missedBoxes: action.payload.missedBoxes,
                 movingBoxStartingPosition: [
-                    action.payload.initialBoxes.slice(-1)[0].position[0],
-                    action.payload.initialBoxes.length * TowerConstants.BOX_HEIGHT,
-                    action.payload.initialBoxes.slice(-1)[0].position[2],
+                    action.payload.boxes.slice(-1)[0].position[0],
+                    action.payload.boxes.length * TowerConstants.BOX_HEIGHT,
+                    action.payload.boxes.slice(-1)[0].position[2],
                 ],
                 movingBoxDimesions: {
-                    width: action.payload.initialBoxes.slice(-1)[0].args[0],
-                    length: action.payload.initialBoxes.slice(-1)[0].args[2],
+                    width: action.payload.boxes.slice(-1)[0].args[0],
+                    length: action.payload.boxes.slice(-1)[0].args[2],
                 },
-                missedBoxes: [],
             };
 
         case 'STACK_NEW_BOX':
@@ -99,11 +105,12 @@ export const towerReducer: Reducer<TowerStateType, TowerActionType> = (state, ac
                 ...state,
                 direction: chooseRandomDirection(),
                 isEndGame: false,
-                boxes: initialBoxes,
+                boxes: initialBoxes.boxes,
+                missedBoxes: initialBoxes.missedBoxes,
                 movingBoxDimesions: TowerConstants.START_DIMENSIONS,
                 movingBoxStartingPosition: [
                     TowerConstants.START_LOCATION.x,
-                    initialBoxes.length - 1 * TowerConstants.BOX_HEIGHT,
+                    initialBoxes.boxes.length - 1 * TowerConstants.BOX_HEIGHT,
                     TowerConstants.START_LOCATION.z,
                 ],
             };
@@ -133,14 +140,14 @@ const initialValues: TowerStateType = {
     isEndGame: false,
     direction: Direction.NONE,
     movingBoxDimesions: TowerConstants.START_DIMENSIONS,
-    boxes: initialBoxes,
+    boxes: initialBoxes.boxes,
     movingBoxStartingPosition: [
         TowerConstants.START_LOCATION.x,
         2 * TowerConstants.BOX_HEIGHT,
         TowerConstants.START_LOCATION.z,
     ],
     perfectHit: false,
-    missedBoxes: [],
+    missedBoxes: initialBoxes.missedBoxes,
 };
 
 export const useTowerReducer = (middleware?: (state: TowerStateType) => void) => {

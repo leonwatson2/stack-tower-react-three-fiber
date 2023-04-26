@@ -1,12 +1,11 @@
-import { useCallback, useEffect, useRef } from 'react';
-import { Mesh, Box3, Group } from 'three';
-import { useControls } from 'leva';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 import { useKeyboardControls } from '@react-three/drei';
 
 import { BOX_HEIGHT } from './constants/towerConstants';
 import { Controls, Direction, MissedBox } from './Types';
-import { useTowerReducer, initialBoxes } from './reducers/tower/towerReducer';
+import { initialBoxes, useTowerReducer } from './reducers/tower/towerReducer';
 import {
     directionBoxesOverlap,
     getNewStackBoxValues,
@@ -17,12 +16,9 @@ import { TowerActionType } from './reducers/tower';
 import { TowerConstants } from './constants';
 
 export const useTowerGame = () => {
-    const lastBox = useRef<Mesh>();
-    const movingBox = useRef<Mesh>();
-    const towerGroupRef = useRef<Group>();
-    const { speed } = useControls('towerFunctions', {
-        speed: { value: 7.5, min: 0.1, max: 2., step: 0.1 },
-    })
+    const lastBox = useRef<THREE.Mesh>();
+    const movingBox = useRef<THREE.Mesh>();
+    const towerGroupRef = useRef<THREE.Group>();
     const [
         {
             atStartMenu,
@@ -38,15 +34,14 @@ export const useTowerGame = () => {
     ] = useTowerReducer();
 
     const startGame = useCallback(() => {
-        dispatch({ type: 'START_GAME', payload: { initialBoxes } });
+        dispatch({ type: 'START_GAME', payload: initialBoxes });
     }, [dispatch]);
     const [sub] = useKeyboardControls<Controls>();
 
     const stackNewBox = useCallback(() => {
 
-        console.log('stackNewBox called')
-        const box1 = new Box3().setFromObject(lastBox.current);
-        const box2 = new Box3().setFromObject(movingBox.current);
+        const box1 = new THREE.Box3().setFromObject(lastBox.current);
+        const box2 = new THREE.Box3().setFromObject(movingBox.current);
         const [lastBoxEdges, movingBoxEdges] = roundBoxMinMaxToTwoDecimals(box1, box2);
 
         let missedWidth = lastBoxEdges.max.x - lastBoxEdges.min.x;
@@ -114,7 +109,7 @@ export const useTowerGame = () => {
             (hit) => {
                 if (hit) {
                     if (isEndGame || atStartMenu) {
-                        dispatch({ type: 'START_GAME', payload: { initialBoxes: initialBoxes } });
+                        startGame()
                     } else {
                         stackNewBox();
                     }
@@ -122,7 +117,7 @@ export const useTowerGame = () => {
             },
         );
         return unsub;
-    }, [direction, stackNewBox, atStartMenu]);
+    }, [startGame, stackNewBox, atStartMenu, isEndGame]);
     useEffect(() => {
         const unsub = sub(
             (state) => state.menu,
@@ -133,10 +128,12 @@ export const useTowerGame = () => {
         return unsub;
     }, []);
 
-    useFrame(() => {
+    const newSpeed = useMemo(() => {
+        return TowerConstants.STARTING_SPEED + Math.floor(boxes.length / 10) * 5;
+    }, [boxes])
+    useFrame((_, delta) => {
         if (direction !== Direction.NONE && !atStartMenu) {
-            const newSpeed = TowerConstants.STARTING_SPEED + boxes.length / 10 * (speed / 100);
-            moveInDirection[direction](movingBox.current, lastBox.current, dispatch, newSpeed);
+            moveInDirection[direction](movingBox.current, lastBox.current, dispatch, +(newSpeed * delta).toFixed(1));
         }
     });
 
@@ -156,28 +153,14 @@ export const useTowerGame = () => {
     };
 };
 
-export const chooseRandomDirection: (chosenDirection?: Direction) => Direction = (
-    chosenDirection,
-) => {
-    const map = {
-        0: Direction.POSITIVE_X,
-        1: Direction.NEGATIVE_X,
-        2: Direction.POSITIVE_Z,
-        3: Direction.NEGATIVE_Z,
-        4: Direction.NONE,
-    };
-    if (chosenDirection !== undefined) return map[chosenDirection];
-    const randomDirection = Math.floor(Math.random() * 4);
-    return map[randomDirection];
-};
 
 export const moveInDirection: Record<
     Direction,
-    (movingBox: Mesh, lastBox: Mesh, setDirection: React.Dispatch<TowerActionType>, speedAddition: number) => void
+    (movingBox: THREE.Mesh, lastBox: THREE.Mesh, setDirection: React.Dispatch<TowerActionType>, speedAddition: number) => void
 > = {
     [Direction.POSITIVE_X]: (movingBox, lastBox, setDirection, newSpeed) => {
-        const { max: movingBoxMax } = new Box3().setFromObject(movingBox);
-        const { max: lastBoxMax } = new Box3().setFromObject(lastBox);
+        const { max: movingBoxMax } = new THREE.Box3().setFromObject(movingBox);
+        const { max: lastBoxMax } = new THREE.Box3().setFromObject(lastBox);
         if (lastBoxMax.x + TowerConstants.BOX_TRAVEL_DISTANCE < movingBoxMax.x) {
             setDirection({ type: 'GO_OPPOSITE_DIRECTION' });
         } else {
@@ -185,8 +168,8 @@ export const moveInDirection: Record<
         }
     },
     [Direction.NEGATIVE_X]: (movingBox, lastBox, setDirection, newSpeed) => {
-        const { min: movingBoxMin } = new Box3().setFromObject(movingBox);
-        const { min: lastBoxMin } = new Box3().setFromObject(lastBox);
+        const { min: movingBoxMin } = new THREE.Box3().setFromObject(movingBox);
+        const { min: lastBoxMin } = new THREE.Box3().setFromObject(lastBox);
         if (lastBoxMin.x - TowerConstants.BOX_TRAVEL_DISTANCE > movingBoxMin.x) {
             setDirection({ type: 'GO_OPPOSITE_DIRECTION' });
         } else {
@@ -194,8 +177,8 @@ export const moveInDirection: Record<
         }
     },
     [Direction.POSITIVE_Z]: (movingBox, lastBox, setDirection, newSpeed) => {
-        const { max: movingBoxMax } = new Box3().setFromObject(movingBox);
-        const { max: lastBoxMax } = new Box3().setFromObject(lastBox);
+        const { max: movingBoxMax } = new THREE.Box3().setFromObject(movingBox);
+        const { max: lastBoxMax } = new THREE.Box3().setFromObject(lastBox);
         if (lastBoxMax.z + TowerConstants.BOX_TRAVEL_DISTANCE < movingBoxMax.z) {
             setDirection({ type: 'GO_OPPOSITE_DIRECTION' });
         } else {
@@ -203,8 +186,8 @@ export const moveInDirection: Record<
         }
     },
     [Direction.NEGATIVE_Z]: (movingBox, lastBox, setDirection, newSpeed) => {
-        const { min: movingBoxMin } = new Box3().setFromObject(movingBox);
-        const { min: lastBoxMin } = new Box3().setFromObject(lastBox);
+        const { min: movingBoxMin } = new THREE.Box3().setFromObject(movingBox);
+        const { min: lastBoxMin } = new THREE.Box3().setFromObject(lastBox);
         if (lastBoxMin.z - TowerConstants.BOX_TRAVEL_DISTANCE > movingBoxMin.z) {
             setDirection({ type: 'GO_OPPOSITE_DIRECTION' });
         } else {

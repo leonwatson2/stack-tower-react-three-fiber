@@ -1,5 +1,5 @@
 import React, { ForwardRefRenderFunction } from 'react';
-import { Mesh } from 'three';
+import * as THREE from 'three';
 
 import { TowerConstants } from './constants';
 
@@ -12,7 +12,7 @@ type MovingBoxProps = {
     color: string;
 };
 
-const MovingBoxComponent: ForwardRefRenderFunction<Mesh, MovingBoxProps> = (
+const MovingBoxComponent: ForwardRefRenderFunction<THREE.Mesh, MovingBoxProps> = (
     { position, deminsions: { width, length: height }, color },
     boxRef,
 ) => {
